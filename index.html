@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Concreto y Presupuesto</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --accent: #ff9800;
+      --accent-green: #25d366;
+      --accent-red: #ff4444;
+      --text: #ffffff;
+      --subtext: #aaaaaa;
+      --border: #333333;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      border: 1px solid var(--border);
+      box-sizing: border-box;
+    }
+    h2 {
+      margin-top: 0;
+      color: var(--accent);
+      text-align: center;
+      font-size: 1.4rem;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+      margin: 16px 0 10px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .input-group {
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--subtext);
+      margin-bottom: 4px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #2a2a2a;
+      color: #fff;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .m2-box {
+      background: rgba(255, 68, 68, 0.1);
+      border: 1px solid var(--accent-red);
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .m2-title {
+      color: var(--accent-red);
+      font-size: 0.85rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .m2-val {
+      color: var(--accent-red);
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: background 0.2s;
+    }
+    button:active {
+      opacity: 0.8;
+    }
+    .btn-whatsapp {
+      background: #25d366;
+      color: #fff;
+      margin-top: 15px;
+    }
+    .results {
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .result-item:last-child {
+      border-bottom: none;
+    }
+    .result-label {
+      color: var(--subtext);
+      font-size: 0.9rem;
+    }
+    .result-val {
+      font-weight: bold;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+    .highlight {
+      color: var(--accent);
+    }
+    .divider {
+      border-top: 1px solid var(--accent);
+      margin: 12px 0;
+    }
+    .total-box {
+      background: #1e3a29;
+      border: 1px solid var(--accent-green);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 15px;
+      text-align: center;
+    }
+    .total-box .total-title {
+      font-size: 0.85rem;
+      color: #a5d6a7;
+      text-transform: uppercase;
+    }
+    .total-box .total-amount {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #25d366;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Calculadora de Concreto</h2>
+  
+  <div class="section-title">1. Medidas del Radier</div>
+  
+  <div class="grid-2">
+    <div class="input-group">
+      <label for="largo">Largo (m):</label>
+      <input type="number" id="largo" placeholder="Ej: 5" step="0.01" oninput="actualizarM2()">
+    </div>
+    <div class="input-group">
+      <label for="ancho">Ancho (m):</label>
+      <input type="number" id="ancho" placeholder="Ej: 4" step="0.01" oninput="actualizarM2()">
+    </div>
+  </div>
+
+  <div class="input-group">
+    <label for="espesor">Espesor (cm):</label>
+    <input type="number" id="espesor" placeholder="Ej: 10" step="1">
+  </div>
+
+  <div class="m2-box">
+    <span class="m2-title">SUPERFICIE TOTAL:</span>
+    <span class="m2-val" id="m2Live">0.00 m²</span>
+  </div>
+
+  <div class="section-title">2. Tarifa y Contacto</div>
+  
+  <div class="input-group">
+    <label for="manoObra">Mano de Obra ($/m²):</label>
+    <select id="manoObra">
+      <option value="" disabled selected>Seleccione costo M.O.</option>
+      <option value="1000">$1.000 / m²</option>
+      <option value="2000">$2.000 / m²</option>
+      <option value="3000">$3.000 / m²</option>
+      <option value="4000">$4.000 / m²</option>
+      <option value="5000">$5.000 / m²</option>
+      <option value="6000">$6.000 / m²</option>
+      <option value="7000">$7.000 / m²</option>
+      <option value="8000">$8.000 / m²</option>
+      <option value="9000">$9.000 / m²</option>
+      <option value="10000">$10.000 / m²</option>
+      <option value="11000">$11.000 / m²</option>
+      <option value="12000">$12.000 / m²</option>
+      <option value="13000">$13.000 / m²</option>
+      <option value="14000">$14.000 / m²</option>
+      <option value="15000">$15.000 / m²</option>
+    </select>
+  </div>
+
+  <div class="input-group">
+    <label for="telefonoCliente">WhatsApp Cliente (9 dígitos):</label>
+    <input type="tel" id="telefonoCliente" placeholder="912345678">
+  </div>
+
+  <button onclick="calcular()">CALCULAR Y PRESUPUESTAR</button>
+
+  <div class="results" id="results">
+    <div class="section-title">Cálculo de Materiales</div>
+    
+    <div class="result-item">
+      <span class="result-label">Volumen Radier:</span>
+      <span class="result-val" id="volNeto">0 cubos</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Arena Exacta:</span>
+      <span class="result-val" id="arenaExacta">0 cubos</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Gravilla Exacta:</span>
+      <span class="result-val" id="gravillaExacta">0 cubos</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="result-item">
+      <span class="result-label">Cemento a Pedir (25 kg):</span>
+      <span class="result-val highlight" id="sacosCemento">0 sacos</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Arena a Pedir (Comercial):</span>
+      <span class="result-val highlight" id="arenaRedondeada">0 cubos</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Gravilla a Pedir (Comercial):</span>
+      <span class="result-val highlight" id="gravillaRedondeada">0 cubos</span>
+    </div>
+
+    <div class="section-title">Presupuesto Mano de Obra</div>
+    
+    <div class="result-item">
+      <span class="result-label">Superficie Total:</span>
+      <span class="result-val" id="superficieM2">0 m²</span>
+    </div>
+
+    <div class="total-box">
+      <div class="total-title">Total Mano de Obra a Cobrar</div>
+      <div class="total-amount" id="precioTotal">$0</div>
+    </div>
+
+    <button class="btn-whatsapp" onclick="enviarWhatsApp()">📲 ENVIAR PRESUPUESTO POR WHATSAPP</button>
+  </div>
+</div>
+
+<script>
+  let datosResumen = {};
+
+  function fmt(val) {
+    return "$" + Math.round(val).toLocaleString('es-CL');
+  }
+
+  function redondearCubos(val) {
+    if (val <= 0) return 0;
+    return (Math.ceil(val * 2) / 2).toFixed(1);
+  }
+
+  function actualizarM2() {
+    const largo = parseFloat(document.getElementById('largo').value) || 0;
+    const ancho = parseFloat(document.getElementById('ancho').value) || 0;
+    const m2 = largo * ancho;
+    document.getElementById('m2Live').innerText = m2.toFixed(2) + " m²";
+  }
+
+  function parpadearYEnfocar(elemento, mensaje) {
+    alert(mensaje);
+    elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    elemento.focus();
+
+    let contador = 0;
+    const intervalo = setInterval(() => {
+      if (contador % 2 === 0) {
+        elemento.style.backgroundColor = '#ffeb3b';
+        elemento.style.borderColor = '#ffeb3b';
+        elemento.style.color = '#000000';
+      } else {
+        elemento.style.backgroundColor = '#2a2a2a';
+        elemento.style.borderColor = 'var(--border)';
+        elemento.style.color = '#ffffff';
+      }
+      contador++;
+
+      if (contador >= 6) {
+        clearInterval(intervalo);
+        elemento.style.backgroundColor = '';
+        elemento.style.borderColor = '';
+        elemento.style.color = '';
+      }
+    }, 200);
+  }
+
+  function limpiarCampos() {
+    document.getElementById('largo').value = '';
+    document.getElementById('ancho').value = '';
+    document.getElementById('espesor').value = '';
+    document.getElementById('manoObra').value = '';
+    document.getElementById('telefonoCliente').value = '';
+    document.getElementById('m2Live').innerText = '0.00 m²';
+    
+    document.getElementById('results').style.display = 'none';
+    datosResumen = {};
+  }
+
+  function calcular() {
+    const inputLargo = document.getElementById('largo');
+    const inputAncho = document.getElementById('ancho');
+    const inputEspesor = document.getElementById('espesor');
+    const selectManoObra = document.getElementById('manoObra');
+
+    const largo = parseFloat(inputLargo.value) || 0;
+    const ancho = parseFloat(inputAncho.value) || 0;
+    const espesorCm = parseFloat(inputEspesor.value) || 0;
+    const pManoObraVal = selectManoObra.value;
+
+    if (largo <= 0) {
+      parpadearYEnfocar(inputLargo, "Por favor ingresa un largo válido para el radier.");
+      return;
+    }
+
+    if (ancho <= 0) {
+      parpadearYEnfocar(inputAncho, "Por favor ingresa un ancho válido para el radier.");
+      return;
+    }
+
+    if (espesorCm <= 0) {
+      parpadearYEnfocar(inputEspesor, "Por favor ingresa un espesor válido en cm.");
+      return;
+    }
+
+    if (!pManoObraVal) {
+      parpadearYEnfocar(selectManoObra, "Por favor selecciona un costo de mano de obra.");
+      return;
+    }
+
+    const espesorMetro = espesorCm / 100;
+    const pManoObra = parseFloat(pManoObraVal);
+    const vNeto = largo * ancho * espesorMetro;
+    const vTotal = vNeto * 1.10;
+    const supM2 = largo * ancho;
+
+    const sacos = Math.ceil(vTotal * 12);
+    const arenaExacta = vNeto * 0.45;
+    const arenaRedondeada = redondearCubos(vTotal * 0.45);
+
+    const gravillaExacta = vNeto * 0.65;
+    const gravillaRedondeada = redondearCubos(vTotal * 0.65);
+
+    const totalManoObra = supM2 * pManoObra;
+
+    datosResumen = {
+      largo: largo.toFixed(2),
+      ancho: ancho.toFixed(2),
+      espesor: espesorCm.toFixed(0),
+      sacos,
+      arenaRedondeada,
+      gravillaRedondeada,
+      pManoObra,
+      supM2,
+      totalManoObra
+    };
+
+    document.getElementById('volNeto').innerText = vNeto.toFixed(2) + " cubos";
+    document.getElementById('arenaExacta').innerText = arenaExacta.toFixed(2) + " cubos";
+    document.getElementById('gravillaExacta').innerText = gravillaExacta.toFixed(2) + " cubos";
+
+    document.getElementById('sacosCemento').innerText = sacos + " sacos";
+    document.getElementById('arenaRedondeada').innerText = arenaRedondeada + " cubos";
+    document.getElementById('gravillaRedondeada').innerText = gravillaRedondeada + " cubos";
+
+    document.getElementById('superficieM2').innerText = supM2.toFixed(2) + " m²";
+    document.getElementById('precioTotal').innerText = fmt(totalManoObra);
+
+    document.getElementById('results').style.display = 'block';
+  }
+
+  function enviarWhatsApp() {
+    const inputTel = document.getElementById('telefonoCliente');
+    let num = inputTel.value.trim();
+    num = num.replace(/\D/g, '');
+
+    if (!num || (num.length !== 9 && num.length !== 11)) {
+      parpadearYEnfocar(inputTel, "Por favor ingresa un número de teléfono válido de 9 dígitos.");
+      return;
+    }
+
+    if (num.length === 9) {
+      num = "56" + num;
+    }
+
+    const ahora = new Date();
+    const fechaStr = ahora.toLocaleDateString('es-CL', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    const horaStr = ahora.toLocaleTimeString('es-CL', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+
+    const totalFormateado = fmt(datosResumen.totalManoObra) + ".-";
+
+    const mensaje = 
+`*PRESUPUESTO RADIER*
+
+*FECHA:* ${fechaStr}
+*HORA:* ${horaStr}
+
+📐 *DIMENSIONES:* 
+* *Largo:* ${datosResumen.largo} mt. 
+* *Ancho:* ${datosResumen.ancho} mt. 
+* *Espesor:* ${datosResumen.espesor} cm. 
+
+🪏 *MATERIALES NECESARIOS:*
+• Cemento (25 kg): ${datosResumen.sacos} sacos
+• Arena: ${datosResumen.arenaRedondeada} cubos
+• Gravilla: ${datosResumen.gravillaRedondeada} cubos
+
+ 👷🏻‍♂️*DETALLE DE MANO DE OBRA:*
+• Total m²: ${datosResumen.supM2.toFixed(2)} m² (${datosResumen.largo} x ${datosResumen.ancho} m)
+• Valor por m²: ${fmt(datosResumen.pManoObra)}
+
+💰 *TOTAL PRESUPUESTO:* 
+* Mano de obra:  \`${totalFormateado}\``;
+
+    const url = `https://api.whatsapp.com/send?phone=${num}&text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
+
+    limpiarCampos();
+  }
+</script>
+
+</body>
+</html>
